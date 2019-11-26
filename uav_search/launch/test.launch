@@ -1,0 +1,84 @@
+<?xml version="1.0"?>
+
+<launch>
+
+  <!-- these are the arguments you can pass this launch file, for example paused:=true -->
+  <arg name="paused" default="false"/>
+  <arg name="use_sim_time" default="false"/>
+  <arg name="gui" default="true"/>
+  <arg name="headless" default="false"/>
+  <arg name="debug" default="false"/>
+
+  <arg name="enable_logging" default="true"/>
+  <arg name="enable_ground_truth" default="true"/>
+  <arg name="log_file" default="uav"/>
+
+  <arg name="model_type" default="uav" />
+
+  <arg name="name" default="uav" />
+  <arg name="x" default="0.0" />
+  <arg name="y" default="0.0" />
+
+
+  <!-- Launch gazebo -->
+  <include file="$(find larics_gazebo_worlds)/launch/empty_with_bricks.launch">
+  </include>
+  
+<!--
+  <node name="box1" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen" args="-file $(find larics_gazebo_worlds)/models/orange_box/model.sdf -sdf -x 20 -z 2 -y 30 -model box1"/>
+
+  <node name="box2" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen" args="-file $(find larics_gazebo_worlds)/models/orange_box/model.sdf -sdf -x 20 -z 3 -y 30 -model box2"/>
+
+  <node name="box3" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen" args="-file $(find larics_gazebo_worlds)/models/orange_box/model.sdf -sdf -x 20 -z 4 -y 30 -model box3"/>
+
+  <node name="box7" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen" args="-file $(find larics_gazebo_worlds)/models/blue_box/model.sdf -sdf -x 28 -z 2 -y 43 -model box7"/>
+
+  <node name="box8" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen" args="-file $(find larics_gazebo_worlds)/models/blue_box/model.sdf -sdf -x 28 -z 3 -y 43 -model box8"/>
+
+  <node name="box9" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen" args="-file $(find larics_gazebo_worlds)/models/blue_box/model.sdf -sdf -x 28 -z 4 -y 43 -model box9"/>
+
+  <node name="box13" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen" args="-file $(find larics_gazebo_worlds)/models/red_box/model.sdf -sdf -x -27 -z 2 -y 37 -model box13"/>
+
+  <node name="box14" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen" args="-file $(find larics_gazebo_worlds)/models/red_box/model.sdf -sdf -x -27 -z 3 -y 37 -model box14"/>
+
+  <node name="box15" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen" args="-file $(find larics_gazebo_worlds)/models/red_box/model.sdf -sdf -x -27 -z 4 -y 37 -model box15"/>
+
+  <node name="box19" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen" args="-file $(find larics_gazebo_worlds)/models/green_box/model.sdf -sdf -x -18 -z 2 -y 34 -model box19"/>
+
+  <node name="box20" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen" args="-file $(find larics_gazebo_worlds)/models/green_box/model.sdf -sdf -x -18 -z 3 -y 34 -model box20"/>
+
+  <node name="box21" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen" args="-file $(find larics_gazebo_worlds)/models/green_box/model.sdf -sdf -x -18 -z 4 -y 34 -model box21"/>
+-->
+
+
+<!--
+  <node name="b1ox22" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen" args="-file $(find larics_gazebo_worlds)/models/green_box/model.sdf -sdf -x 1 -z 1 -y 1 -model box22"/>
+
+  <node name="b1ox23" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen" args="-file $(find larics_gazebo_worlds)/models/blue_box/model.sdf -sdf -x 0 -z 1 -y 1 -model box23"/>
+
+  <node name="b1ox24" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen" args="-file $(find larics_gazebo_worlds)/models/red_box/model.sdf -sdf -x 1 -z 1 -y 0 -model box24"/>
+
+
+-->
+    <include file="$(find mmuav_description)/launch/spawn_uav.launch">
+    <arg name="model_type" value="$(arg model_type)" />
+    <arg name="name" value="$(arg name)" />
+    <arg name="x" value="$(arg x)" />
+    <arg name="y" value="$(arg y)" />
+  </include>
+
+  <include file="$(find mmuav_control)/launch/rotors_variation_attitude_position_control.launch">
+    <arg name="namespace" value="$(arg name)" />
+    <arg name="x" value="$(arg x)" />
+    <arg name="y" value="$(arg y)" />
+  </include>
+
+<group ns="uav">
+  <node name="cv_segment" pkg="opencv_apps" type="segment_objects">
+      <remap from="image" to="camera1/image_raw/compressed"/>
+  </node>
+  <node name="trajectory_generator" pkg="topp_ros" type="generate_toppra_trajectory.py" output="screen"/>
+  <node name="publisher_uav" pkg="topp_ros" type="toppra_trajectory_call_example.py" output="screen"/>
+</group>
+
+</launch>

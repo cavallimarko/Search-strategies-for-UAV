@@ -1,0 +1,10 @@
+cd ~/catkin_ws/src
+rosrun topp_ros generate_toppra_trajectory.py
+roslaunch uav_search test.launch
+rosclean purge
+rqt
+rviz
+roslaunch uav_search test.launch ->simulacija
+python main_spiral.py ->generator trajektorije
+python detect_cv_bridge.py ->detekcija objekata
+
